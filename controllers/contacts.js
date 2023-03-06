@@ -3,7 +3,8 @@ const { Contact } = require("../models/contact");
 const { ctrlWrapper, HttpError } = require("../helpers");
 
 const listContacts = async (req, res) => {
-  const result = await Contact.find();
+  const { _id: owner } = req.user;
+  const result = await Contact.find({ owner });
   res.json(result);
 };
 
@@ -17,7 +18,8 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   res.status(201).json(result);
 };
 
@@ -56,27 +58,6 @@ const updateFavarite = async (req, res) => {
   }
   res.json(result);
 };
-
-// const updateStatusContact = async (req, res, next) => {
-//   const { contactId } = req.params;
-//   const { error } = favoriteJoiSchema(req.body);
-
-//   if (error) {
-//     res.status(400).json({ message: "missing field favorite" });
-//   }
-//   const { favorite } = req.body;
-//   const result = await Contact.findByIdAndUpdate(
-//     contactId,
-//     { favorite },
-//     {
-//       new: true,
-//     }
-//   );
-//   if (!result) {
-//     return res.status(404).json({ message: "Not found contact" });
-//   }
-//   return res.status(200).json(result);
-// };
 
 module.exports = {
   listContacts: ctrlWrapper(listContacts),
